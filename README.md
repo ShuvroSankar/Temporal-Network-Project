@@ -36,8 +36,11 @@ The framework was applied to a 10-year Reddit corpus (2014–2024) of 1,870,468 
 ├── data/
 │   ├── subreddits24/                       # Raw .zst subreddit dump files (231 files)
 │   │   └── *_edges_2014_2025.csv          # Extracted per-subreddit edge CSVs
-│   ├── reddit_signed_edges_2014_2025.parquet   # Raw merged dataset (10.17M edges)
-│   └── reddit_signed_edges_clean_2014_2025.parquet  # Clean within-corpus dataset (1.87M edges)
+│   ├── reddit_signed_edges_2014_2025.parquet   # Clean within-corpus dataset (1.87M edges)
+├── files/
+│   ├── reddit.ipynb                           # Raw .zst subreddit dump files to CSV files (231 files)
+│   ├── marge_all_files.ipynb                  # obtaining clean parquet file to work with 
+│   ├── pipeline.ipynb                         # Implementing GFT pipeline 
 ├── outputs/
 │   ├── dataset_overview.png               # Figure 1: Dataset characterisation (4 panels)
 │   ├── network_july2019_v2.png            # Figure 2: Network graph — July 2019
@@ -47,8 +50,8 @@ The framework was applied to a 10-year Reddit corpus (2014–2024) of 1,870,468 
 │   ├── bridge_detection.png               # Figure 5: Bridge subreddit heatmap
 │   └── confusion_matrix.png               # Figure 6: Predictive model results
 └── docs/
-    ├── Methodology_STGSP_Final.docx       # Section 4: Methodology
-    └── Results_Discussion_STGSP_Final.docx # Sections 5–7: Results, Discussion, Conclusion
+    ├── 
+    └── 
 ```
 
 ---
