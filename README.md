@@ -8,7 +8,7 @@
 
 ## Overview
 
-This repository contains the complete implementation of the ST-GSP framework — a novel approach to early warning detection of inter-community conflict in online social platforms using signed temporal graph signal processing.
+This repository contains the complete implementation of the ST-GSP framework, a novel approach to early warning detection of inter-community conflict in online social platforms using signed temporal graph signal processing.
 
 The framework was applied to a 10-year Reddit corpus (2014–2024) of 1,870,468 clean within-corpus signed interaction edges across 230 subreddits, achieving **94% prediction accuracy** with **zero false negatives** on a 33-month test set.
 
