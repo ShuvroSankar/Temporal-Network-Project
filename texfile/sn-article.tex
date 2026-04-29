@@ -1,0 +1,1038 @@
+\documentclass[a4paper,fleqn]{cas-dc}
+
+% If the frontmatter runs over more than one page
+% use the longmktitle option.
+
+%\documentclass[a4paper,fleqn,longmktitle]{cas-dc}
+
+%\usepackage[numbers]{natbib}
+%\usepackage[authoryear]{natbib}
+\usepackage[numbers, sort&compress]{natbib}
+\usepackage{microtype}
+\usepackage{subfigure}
+\usepackage{graphicx}%
+\usepackage{multirow}%
+\usepackage{float} 
+\usepackage{amsmath,amssymb,amsfonts}%
+\usepackage{amsthm}%
+%\usepackage{mathrsfs}%
+\usepackage[title]{appendix}%
+\usepackage{xcolor}%
+\usepackage{textcomp}%
+\usepackage{manyfoot}%
+\usepackage{booktabs}%
+\usepackage{algorithm}%
+\usepackage{algorithmicx}%
+\usepackage{algpseudocode}%
+\usepackage{listings}%
+%\usepackage{caption}
+\usepackage{tabularx}
+%\usepackage{subcaption}
+\usepackage{calc}   
+\usepackage{array}
+
+%%%Author macros
+\def\tsc#1{\csdef{#1}{\textsc{\lowercase{#1}}\xspace}}
+\tsc{WGM}
+\tsc{QE}
+%%%
+
+% Uncomment and use as if needed
+%\newtheorem{theorem}{Theorem}
+%\newtheorem{lemma}[theorem]{Lemma}
+%\newdefinition{rmk}{Remark}
+%\newproof{pf}{Proof}
+%\newproof{pot}{Proof of Theorem \ref{thm}}
+
+\begin{document}
+% \linenumbers
+\tolerance=9999
+\emergencystretch=2em
+\hyphenpenalty=10000
+\exhyphenpenalty=10000
+\let\WriteBookmarks\relax
+\def\floatpagepagefraction{1}
+\def\textpagefraction{.001}
+
+% Short title
+\shorttitle{Temporal Network-Based Early Warning of Online Community Behaviour in Social Platforms}    
+
+% Short author
+\shortauthors{Sen et~al.}  
+
+% Main title of the paper
+\title [mode = title]{Temporal Network-Based Early Warning of Online Community Behaviour in Social Platforms}  
+% Title footnote mark
+% eg: \tnotemark[1]
+% \tnotemark[<tnote number>] 
+
+% Title footnote 1.
+% eg: \tnotetext[1]{Title footnote text}
+% \tnotetext[<tnote number>]{<tnote text>} 
+
+% First author
+%
+% Options: Use if required
+% eg: \author[1,3]{Author Name}[type=editor,
+%       style=chinese,
+%       auid=000,
+%       bioid=1,
+%       prefix=Sir,
+%       orcid=0000-0000-0000-0000,
+%       facebook=<facebook id>,
+%       twitter=<twitter id>,
+%       linkedin=<linkedin id>,
+%       gplus=<gplus id>]
+
+\author[1]{Shuvro Sankar Sen}[orcid=0009-0008-7123-6877]
+\ead{25-93776-2@student.aiub.edu}
+
+\author[1]{Papri Saha}[orcid=0009-0009-3080-3262]
+\ead{25-93672-1@student.aiub.edu}
+
+\author[1]{Sudipta Kumar Das}[orcid=0009-0000-7521-7763]
+\ead{25-93886-3@student.aiub.edu}
+
+\author[1]{Tasnuva Afrin}[orcid=0009-0006-1792-0104]
+\ead{25-93746-2@student.aiub.edu}
+
+\author[1]{Ahnaf Abdullah Zayad}[orcid=0009-0002-7975-8801]
+\ead{25-93882-3@student.aiub.edu}
+
+
+\author[1]{Rajarshi Roy Chowdhury}[orcid=0000-0001-9235-3687]
+\ead{rajarshi@aiub.edu}
+\cormark[1]
+\cortext[1]{Corresponding author}
+\affiliation[1]{organization={Department of Computer Science, American International University - Bangladesh},
+            % addressline={}, 
+            city={Dhaka},
+%          citysep={}, % Uncomment if no comma needed between city and postcode
+            postcode={1229}, 
+            % state={},
+            country={Bangladesh}}
+
+% Footnote text
+% \fntext[1]{}
+
+% For a title note without a number/mark
+%\nonumnote{}
+
+% Here goes the abstract
+\begin{abstract}
+Online social platforms are increasingly challenged by inter-community struggles; however, current detection mechanisms are based on content characteristics or fixed network snapshots of the network, which do not capture the structural and temporal aspects of how hostility is spread. This paper presents a Signed Temporal Graph Signal Processing (ST-GSP) architecture to predict disruptive community behavior on Reddit. Based on 1,870,468 sentiment-labelled cross-subreddit interaction edges, representing 230 subreddits and 132 monthly snapshots (January 2014- December 2024), the framework serves three purposes. To measure network-level frustration based on the Social Balance Theory, first, a Structural Tension Index is created using the signed Laplacian, based on the smallest eigenvalue of the signed Laplacian. Second, a multiscale Graph Fourier Transform filter is used to isolate stable community consensus and high-frequency bursts of conflict in a 26 high-risk months Tension Ratio metric. Third, spectral leakage analysis identifies bridge subreddits which encourage negative sentiment by a disproportionate amount across the community boundaries and attributes their creation to future conflict periods through precursor analysis. Logistic regression classifier trained using features derived by GFT can be used to predict high-risk months in advance. The ability to detect events two months before they manifest is proven by validation against four known Reddit incidences in 2015 Blackout, 2018 gun sales ban, 2023 community quarantines, and 2023 API pricing controversy. This framework brings together signed network topology, spectral tension analysis and temporal filtering into one early warning system.
+\end{abstract}
+
+% Use if graphical abstract is present
+%\begin{graphicalabstract}
+%\includegraphics{}
+%\end{graphicalabstract}
+
+% Research highlights
+% \begin{highlights}
+% \item 
+% \item 
+% \item 
+% \end{highlights}
+
+% Keywords
+% Each keyword is seperated by \sep
+\begin{keywords}
+\sep Graph signal processing \sep Online community conflict \sep Signed temporal networks \sep Spectral analysis \sep Social network analysis \sep Early warning systems
+\end{keywords}
+
+\maketitle
+
+
+\section{Introduction}\label{introduction}
+
+
+The dynamic growth of online social networks has radically changed the nature of collective discussion, allowing millions of users to create communities, share opinions, and collectively influence the creation of societal narratives \cite{7_Goglia2024, 5_Huber2022}. Reddit organizes its content into thousands of topical communities, which are called subreddits and are independently governed by its members, making it one of the largest forums for decentralized public discourse online and information sharing on a large scale ~\cite{2_Zhu2022}. Every subreddit is a self-governing community with a set of rules, guidelines, and cultures, allowing people to discuss any topic, including news and politics or niche hobbies ~\cite{7_Goglia2024}. Nevertheless, such structural openness and size make these platforms vulnerable to inter-community struggles, coordinated campaigns of toxicity, and the virality of hostile behavior across communication lines ~\cite{3_Vachher2020, 9_Gothard2020}. Disruptive phenomena, such as understanding, anticipating, and mitigating, pose an urgent challenge for platform governance, content moderation, and the maintenance of healthy digital public spaces.
+A network science perspective on online communities has produced useful insights into the behavior of users, as well as the structure of the community and information propagation. These help to identify coherent groups of nodes (users or communities) that are highly connected among themselves but sparsely connected to the rest of the network, known as community detection, a fundamental task in network analysis ~\cite{6_Malode2025, 14_McAuley2012}. Louvain, Girvan–Newman, spectral clustering, and $K$-means are traditional community detection algorithms that have been widely applied to social network data to reveal latent group structures in social networks on a large scale ~\cite{6_Malode2025}. Nevertheless, most of these approaches are based on snapshots of the network itself and fail to consider the dynamic nature of social interactions. In real-world social networks, the attributes of nodes, the formation and dissolution of edges, and the boundaries of communities are dynamic in the time context ~\cite{10_yuan2025}. This phenomenon has inspired the design of temporal community detection (TCD) algorithms that can jointly discover community structures and monitor their evolutionary dynamics. For example, TCDA-NE is an evolutionary clustering algorithm with convex non-negative matrix factorization (Convex-NMF) to infer temporal dynamics of community patterns in dynamic networks ~\cite{10_yuan2025}.
+
+The main drawback of traditional network analysis methods in the online conflict detection framework is the impossibility of modelling the polarity of interactions. In most social networks, interactions between users are not simply present or absent; rather, they are sentiment-positive (e.g., agreement, support, upvoting) or negative (e.g., disagreement, hostility, downvoting). Signed networks, in which the weight on an edge is positive or negative, make this interaction more expressive and capture both cooperative and antagonistic relationships ~\cite{12_Babul2024, 13_caimo2026}. The analysis of signed networks is theoretically justified by the Structural Balance Theory (SBT), which states that social networks prefer to be in a configuration where the friend of my friend is my friend (positive transitivity) and the enemy of my enemy is my friend (negative anti-transitivity) ~\cite{13_caimo2026}. A signed network that breaks these balanced configurations, for example, when two allies of one actor are enemies of each other, is called structurally frustrated, which may be used to quantitatively measure the level of latent tension in the network ~\cite{12_Babul2024}. 
+Signed graph embedding algorithms, such as the Signed Hamiltonian Eigenvector Embedding for Proximity (SHEEP) algorithm, take advantage of the spectral characteristics of the signed Laplacian matrix to generate low-dimensional representations that capture both proximity and polarity, allowing the measurement of extremism of nodes and finding structural imbalance ~\cite{12_Babul2024}.
+Separable temporal exponential random graph models (STERGMs) are yet another illustration of the significance of the joint capturing of the formation, persistence, and sign dynamics of edges in temporal signed networks with existing methods \cite{13_caimo2026}.
+
+In addition to the structural modelling of social networks, the analysis of temporal signals, as defined on graph structures, has emerged as a paradigm that expands classical signal processing to support signals that live on the nodes of a network. Graph signal processing (GSP) can be viewed as an extension of classical signal processing to such signals ~\cite{1_Mcneil2021}. A temporal graph signal is a multivariate time series in which each component is connected to the nodes of a given graph structure. The temporal graph signal decomposition (TGSD) framework offers a dictionary-based method of encoding both the temporal and graph structural regularities with a considerable performance improvement in the context of missing value imputation, temporal interpolation, and clustering of social media activity ~\cite{1_Mcneil2021}. Spectral analysis of network phenomena at various frequencies is facilitated by the use of the Graph Fourier Transform (GFT). The projection of a graph signal onto the eigenvectors of the graph Laplacian can be used to identify smooth, community-level trends (low-frequency components) and sharp, localized fluctuations (high-frequency components), such as abrupt intercommunity disputes. These spectral instruments present a principled structure for breaking down complex phenomena in society into interpretable parts, which have become essential in early warning systems.
+
+Different approaches have been proposed in the literature to detect disruptive events on social platforms. Social event detection (SED) systems detect and categorize salient social media content and structures based on social media content. The SED-Aug framework integrates explicit data augmentation with large language models and implicit perturbations in the feature space of the structure-fused embeddings to improve detection robustness for limited labelling data \cite{8_ma2025}. Detecting fake news and hate speech, fake news detectors and hate speech detectors are both graph-based models that employ contrastive learning methods on heterogeneous user-content interaction graphs and combine semantic, behavioral, and contextual signals to achieve high classification accuracy \cite{11_Nivedita2025}. Investigations into particular disruptive communities, for example, Incel subreddits, have shown that it is possible to profile and track radicalized online communities using distinctive linguistic fingerprints and activity patterns \cite{9_Gothard2020}. Additionally, massive datasets of Reddit have been refined in the study of ideological and extreme bias to present extensive corpora for examining radicalized discourse across subreddit borders \cite{4_Ravi2024}. On the infrastructure level, the Reddit Dataset Stream Pipeline (RDSP) provides the ability to create enormous temporal graphs from all of Reddit by handling approximately 9 terabytes of data with the help of highly parallel streaming \cite{5_Huber2022}. Community-level conflict studies in controlled settings, such as the r/place experiment, have demonstrated that both physical proximity on the platform and existing political or cultural hostility contribute to inter-community conflict. The overall number of users participating in the selection is a more predictive factor than the activity of highly engaged individuals towards conflict outcomes \cite{3_Vachher2020}.
+
+Although such advances have been made, considerable research gaps remain. First, current methods of applying online conflict detection are primarily based on content-based features (e.g., sentiment polarity, toxicity scores, and linguistic markers) or the use of static structural features (e.g., community membership and centrality metrics). However, they rarely combine signed network topologies and temporal signal dynamics in an analytical framework. Second, existing early warning systems do not distinguish between transient flash arguments, which are short-lived disagreements that occur and dissipate quickly, and sustained coordinated community raids, which are planned, organized hostility over longer durations. Third, there is a lack of approaches that can reveal the existence of so-called bridge communities–subreddits that are a topological path to manifesting toxicity throughout the network–and are capable of forecasting the spatial spread of conflict across interconnected communities.
+
+This study aims to create a Signed Temporal Graph Signal Processing (ST-GSP) framework capable of anticipating and detecting intercommunity conflicts on Reddit and preventing their escalation. This framework is grounded in signed network theory, spectral graph 
+analysis, and multiscale temporal filtering in a unified pipeline that transforms raw user interaction data into actionable early warning signals. The framework should serve a wide range of stakeholders, such as platform administrators and content moderators, who will need automated mechanisms to intervene proactively in conflicts; policymakers and digital governance organizations that will seek evidence-based approaches to regulate online discussions; researchers in the field of computational social science who will study the structural and temporal factors of online hostility; and community administrators who will need to maintain constructive dialogues and protect vulnerable community members against coordinated harassment. In this regard, three goals were pursued. 
+
+\begin{itemize}
+    \item This study seeks to create a Structural Tension Index based on Signed Graph Spectral Analysis that measures the level of frustration at the network level based on the violation of Social Balance Theory, that is, by computing the signed Laplacian Ls = D- A for each snapshot of the temporal network and using its lowest eigenvalue  $\lambda_{min}$(Ls) as the tension. A value of $\lambda_{min}$=0 indicates a balanced network, while $\lambda_{min}>$  0 corresponds to structural frustration, in which case the goal moves the analysis of sentiment into a deep structural tension model.
+
+    \item This research aims to design a Multiscale Temporal Filter that can simultaneously perform sentiment source separation at various time scales (e.g., hourly bursts vs. weekly trends) using the Graph Fourier Transform, and thus separate low-frequency and high-frequency information sources, respectively representing stable community clusters and rising inter-community tension. The ability to perform this separation will enable the framework to differentiate between brief flash arguments and sustained coordinated community raids, a crucial feature that existing Early Warning Systems lack.
+
+    \item This study aims to map the Sentiment Diffusion Topology by using the Graph Fourier Transform to measure not only the spectral energy contribution of each node to the larger network but also which communities result in the most spectral energy leakage to the rest of the network, thus being able to predict both the occurrence of a conflict and where it will go, and thus offer actionable intelligence on where to implement a particular intervention to moderate the community.
+
+
+\end{itemize}
+
+%----Research Questions---
+In order to conduct the investigation, the following research questions are answered in this study:
+
+\begin{itemize}
+\item To what extent can the signed Laplacian spectrum be used to measure structural frustration in temporal community networks, and does the resulting Structural Tension Index predict known inter-community conflict events?
+\item Does a multiscale Graph Fourier Transform filter differentiate between flash arguments and sustained coordinated community raids on online social sites?
+\item How well can spectral leakage analysis detect bridge communities into which cross-community conflict propagation might occur, and can the structural antecedents in these bridge communities forecast future high-risk times?
+\end{itemize}
+
+%-----Contributions
+The main contributions of this study are as follows.
+
+\begin{itemize}
+\item To measure Social Balance Theory violation frustration at the network level, a Structural Tension Index (STI) is suggested that utilizes the signed Laplacian spectrum.
+\item A multiscale Graph Fourier Transform filter is created that attempts to distinguish between stable community agreement and bursts of conflict of high frequency, resulting in a Tension Ratio that marks 26 high-risk months.
+\item A spectral leakage approach is presented to identify bridge subreddits which spread negative sentiment across community boundaries, confirmed on four known Reddit events (2015--2023).
+\item An early warning framework named unified ST-GSP is provided which combines signed network construction, spectral analysis, and predictive modelling.
+\end{itemize}
+
+%----Paper Organization
+The remainder of this paper is structured as follows. Section 2 reviews the related literature on graph signal processing, temporal network modelling, social media network analysis, and community behavior on the Internet. Section 3 lists the proposed methodology, which includes data collection and preprocessing, signed temporal network construction, the Structural Tension Index, and the multiscale Graph Fourier Transform filter.
+
+\section{Related Works}
+
+
+Research on online community behavior has been conducted from several related directions, including temporal graph analysis, community conflict analysis, signed network modeling, and graph-based social event detection. These studies provide useful methods and findings; however, they are often developed in separate settings. In this work, the focus is on signed temporal network construction, structural tension analysis through the signed Laplacian, multiscale graph Fourier analysis, and early warning of behavioral shifts in online communities. For this reason, the literature can be reviewed in a grouped form rather than paper by paper. Fig.\ref{fig:prisma_diagram} presents the flow diagram of literature review.
+
+\begin{figure*}[!t]
+\centering
+\includegraphics[width=0.76\textwidth]{figures/Prisma-Diagram.pdf}
+\caption{PRISMA Flow Diagram}
+\label{fig:prisma_diagram}
+\end{figure*}
+
+
+A significant stream of research has been expressed as a result of the temporal analysis by graphs and spectral analysis\cite{1_Mcneil2021} presented the Temporal Graph Decomposition framework, which simultaneously interprets graph and time patterns using a dictionary of graph Fourier transforms and wavelets. Their findings further indicated good interpolation and big data processing performances. Yuan et al. \cite{10_yuan2025} also investigated the topic of temporal community detection and introduced a method that enhanced community detection and community evolution tracking. These papers indicate the utility of the temporal and spectral techniques of studying dynamic networks. Nevertheless, the techniques fail to explicitly model signed social interactions, polarisation, and early warnings in online communities.    
+However, another group of studies focused on Reddit and other online communities as behavioral spaces. In this case, Zhu et al. \cite{2_Zhu2022} conducted a study on Reddit discussions during the Russo-Ukrainian conflict. They uphold how subreddit activity, engagement, and stance changed over time. Vachher et al. \cite{3_Vachher2020} studied inter-community conflicts. During their study, they found that conflict outcomes were primarily shaped by the number of participating users. Then, Goglia and Vega \cite{7_Goglia2024} analyzed Reddit thread growth and disagreement patterns. Moreover, Gothard \cite{9_Gothard2020} tracked subreddit activity, checked whether the language is stable or unstable, and user migration after having any community bans. Together, these studies confirm that online communities show measurable behavioral change, conflict, and structural variation over time. However, most of the studies remain descriptive, event-specific, or limited to particular subreddits. These studies do not build a unified signed temporal framework for conflict monitoring.   
+
+Some researchers have addressed large-scale Reddit data collection and representation. Ravi and Vela \cite{4_Ravi2024} used Pushshift data. They used it to build a large dataset of ideologically biased and extreme content. These contents shared across Reddit communities. Huber et al. \cite{5_Huber2022} proposed a large-scale temporal graph mining pipeline for Reddit. Their research  showed that massive Pushshift archives processed efficiently to study interactions among users and subreddits. These studies are essential. They support the feasibility of large-scale Reddit-based analysis. Moreover, that shows how platform data can be cleaned, organized. However, they did not focus on signed edge construction or detecting structural tension and future behavioral shifts. 
+
+Community discovery and network organization have also been studied from a broader graph mining perspective. Malode et al. \cite{6_Malode2025} compared several community detection algorithms. Their research showed that no single method performs best across all network settings. McAuley and Leskovec \cite{14_McAuley2012} studied social circle discovery in ego networks. It showed that latent-group modeling can outperform earlier baselines. These studies are important because they highlight that community structure is complex. Moreover it also reveals that these community structure is method-dependent. However, they mainly address community grouping and network partitioning. They did not properly addressed signed temporal interaction patterns.
+
+Another relevant direction combines text and graph structures for social signal analysis. The SED-Aug framework combines explicit text augmentation with structural graph embeddings, achieving substantial F1 improvements over prior baselines on limited labelled data \cite{8_ma2025}. Nivedita and Banu \cite{11_Nivedita2025} used a hybrid graph-based contrastive model for fake news and hate speech detection by combining semantic, user, and interaction features. These studies demonstrate that graph-aware learning can improve detection tasks in social media. However, their target problems are event detection and harmful content classification, not the measurement of structural tension inside signed temporal communities.  
+
+Signed network research provides another important foundation for the present study. Babul and Lambiotte  \cite{12_Babul2024} proposed a spectral embedding method for signed networks. In this case, their study showed that signed structure can recover meaningful continuous node attributes. It supports balance-related analysis. Caimo and Gollini \cite{13_caimo2026} studied dynamic signed networks through a temporal exponential random graph framework. Their studies showed that structural balance affects edge formation and persistence. Thus, these studies indicate that sign information matters. Moreover, signed relations should not be ignored in network modeling. At the same time, their limitations are clear. One study focused mainly on unweighted signed settings. On the other hand, the other relied on inferred relations and faced scaling issues. This leaves room for research on directly observed signed interactions in large online social platforms. 
+
+Hence, this study provides strong support for the main building blocks, but not for their full integration. Prior work has separately addressed temporal graph and spectral modeling  \cite{1_Mcneil2021, 10_yuan2025}, Reddit conflict and behavioral analysis \cite{2_Zhu2022, 3_Vachher2020, 7_Goglia2024, 9_Gothard2020}, large-scale Reddit graph processing \cite{4_Ravi2024, 5_Huber2022}, graph-based social detection \cite{8_ma2025, 11_Nivedita2025}, and signed network modeling \cite{12_Babul2024, 13_caimo2026}. However, a unified framework constructs signed temporal interaction networks from social platform data. It measures structural tension through a signed Laplacian. Then, it applies multiscale graph Fourier analysis. Finally, uses these signals for the early warning of online community behavior. That particular topic has not been clearly established in the reviewed studies. This gap directly supports the direction of this study.  
+
+{\small
+\renewcommand{\arraystretch}{1.0}
+\setlength{\tabcolsep}{3pt}
+\begin{table*}[h!]
+\caption{Summary of the Related Works}
+\label{tab:summary_all}
+\begin{tabularx}{\textwidth}{|>{\raggedright\arraybackslash}p{0.09\textwidth}|>{\raggedright\arraybackslash}p{0.16\textwidth}|>{\raggedright\arraybackslash}p{0.16\textwidth}|>{\raggedright\arraybackslash}p{0.12\textwidth}|>{\raggedright\arraybackslash}p{0.14\textwidth}|>{\raggedright\arraybackslash}X|}
+\hline
+\textbf{Source} & \textbf{ML/DL} & \textbf{Feature Engineering} & \textbf{Datasets} & \textbf{Limitations} & \textbf{Results} \\
+\hline
+
+\cite{1_Mcneil2021} & Sparse Dictionary Learning, Matrix Factorization, Graph Signal Processing & Temporal graph signals, graph dictionaries, time dictionaries & Traffic data, social network activity datasets & Complex optimization and dictionary selection & $\sim$28\% reduction in RMSE for missing value reconstruction \\ 
+\hline
+
+\cite{2_Zhu2022} & No ML/DL (Dataset creation and data collection) & Posts, comments, timestamps, subreddit interactions & Reddit conflict-related posts & Limited to a specific geopolitical topic & Provides structured dataset for conflict analysis \\ 
+\hline
+
+\cite{3_Vachher2020} & No ML/DL (Statistical analysis and conflict metrics) & Pixel placement conflict scores, community interaction patterns & Reddit r/place dataset & Limited time window of experiment & Shows community size more important than activity \\ 
+\hline
+
+\cite{4_Ravi2024} & NLP feature extraction, Topic Modeling, Text classification frameworks & Article text, ideological bias labels & Reddit news article dataset & Annotation bias and class imbalance & Provides benchmark dataset for bias detection \\ 
+\hline
+
+\cite{5_Huber2022} & No ML/DL (Graph mining system with stream processing) & Temporal graph edges, Reddit interaction streams & Large-scale Reddit data streams & High computational requirements & Enables scalable real-time temporal graph mining \\ 
+\hline
+
+\cite{6_Malode2025} & Community Detection Algorithms (Louvain, Girvan–Newman, Label Propagation) & Node connectivity, graph topology & SNAP Social Circles dataset & Performance varies across datasets & Identifies most effective algorithms for community detection \\ 
+\hline
+
+\cite{7_Goglia2024} & No ML/DL (Temporal network analysis) & Thread structure, interaction networks, disagreement metrics & Reddit AITA subreddit & Focused on one subreddit & Reveals star-like discussion structures \\ 
+\hline
+
+\cite{8_ma2025} & Large Language Models (LLM), Graph embeddings, Neural classifiers & Text augmentation, structural embeddings, user metadata & Twitter2012, Twitter2018 datasets & High computational cost from LLM usage & Improves F1 score by $\sim$17\% \\ 
+\hline
+
+\cite{9_Gothard2020} & NLP text mining, Rank divergence analysis & Linguistic patterns, subreddit activity features & Reddit incel communities & Limited to specific communities & Identifies language fingerprints of incel groups \\ 
+\hline
+
+\cite{10_yuan2025} & Network Embedding + Convex Non-negative Matrix Factorization (Convex-NMF) & Node embeddings, temporal smoothness & Email and phone communication networks & Sensitive to noisy networks & Improves NMI by up to 0.1 \\ 
+\hline
+
+\cite{11_Nivedita2025} & Graph Neural Networks (GNN) with Contrastive Learning & Content features, user interaction graphs & Social media fake news datasets & Requires large labeled datasets & Improves detection accuracy \\ 
+\hline
+
+\cite{12_Babul2024} & Spectral Graph Embedding using Hamiltonian Eigenvectors & Signed network structure, node proximity & Signed social network datasets & Computationally expensive eigenvector calculations & Captures structural proximity \\ 
+\hline
+
+\cite{13_caimo2026} & Statistical Network Modeling (Bayesian models) & Signed relations, temporal network structure & Dynamic signed network datasets & Model complexity increases with network size & Improves modeling of evolving signed relationships \\ 
+\hline
+
+\cite{14_McAuley2012} & Unsupervised Machine Learning (Node clustering, probabilistic model) & Social network structure, profile similarity & Facebook, Google+, Twitter ego networks & Requires detailed user profiles & Detects overlapping social circles accurately \\ 
+\hline
+\end{tabularx}
+\end{table*}
+}
+
+
+\section{Methodology}\label{methodology}
+The complete analytical pipeline of the ST-GSP framework begins with raw data acquisition and continues through network construction, spectral analysis, and predictive modelling. The pipeline consists of five stages that progress in the following order: (1) data collection and preprocessing, (2) signed temporal network construction, (3) Structural Tension Index computation via signed Laplacian spectral analysis, (4) multiscale Graph Fourier Transform filtering, and (5) bridge subreddit detection and predictive modelling. Fig.~\ref{fig:workflow_diagram} presents a workflow diagram of the research.
+
+\begin{figure*}[htbp]
+\centering
+\includegraphics[width=0.8\textwidth]{figures/Workflow_Diagram.pdf}
+\caption{Workflow Diagram of the Methodology}
+\label{fig:workflow_diagram}
+\end{figure*}
+
+
+% \begin{table}[ht]
+% \centering
+% \caption{ST-GSP pipeline overview with outputs per stage.}
+% \label{tab:pipeline}
+% \begin{tabular}{clp{6cm}}
+% \toprule
+% \textbf{Stage} & \textbf{Component} & \textbf{Key Output} \\
+% \midrule
+% 1 & Data Collection \& Preprocessing
+%   & 1,870,468 clean within-corpus signed edges \\
+% 2 & Signed Network Construction
+%   & 132 monthly signed adjacency matrices \\
+% 3 & Objective~1: STI via Signed Laplacian
+%   & $\lambda_{\min}$ per snapshot, tension heatmap \\
+% 4 & Objective~2: Multiscale GFT Filter
+%   & Tension ratio, 26 flagged high-risk months \\
+% 5 & Objective~3: Bridge Detection \& Prediction
+%   & Bridge subreddits, 94\% accuracy classifier \\
+% \bottomrule
+% \end{tabular}
+% \end{table}
+
+Figure~\ref{fig:workflow_diagram} illustrates the temporal edge distribution, sentiment composition, and degree structure of the clean dataset.
+
+\subsection*{Notation}
+\label{sec:notation}
+To facilitate reading, we summarize the principal symbols used in this section in Table~\ref{tab:notation}.
+
+\begin{table}[h!]
+\centering
+\caption{Summary of key notation used in the methodology.}
+\label{tab:notation}
+\begin{tabular}{@{}p{1.5cm}p{6.5cm}@{}}
+\toprule
+\textbf{Symbol} & \textbf{Description} \\ 
+\midrule
+\(t\)           & Monthly snapshot index (1 to 132) \\
+\(T\)           & Total number of snapshots (\(T=132\)) \\
+\(\mathcal{G}^{(t)}\) & Signed graph snapshot at month \(t\) \\
+\(\mathcal{V}^{(t)}\) & Set of nodes (subreddits) active in month \(t\) \\
+\(n^{(t)}\)     & Number of nodes in snapshot \(t\) \\
+\(\mathcal{E}^{(t)}\) & Set of edges in snapshot \(t\) \\
+\(\mathbf{A}^{(t)}\) & Symmetric signed adjacency matrix for month \(t\) \\
+\(a_{ij}^{(t)}\) & Entry of \(\mathbf{A}^{(t)}\) (values \(-1,0,+1\)) \\
+\(\mathbf{D}^{(t)}\) & Absolute degree matrix (diagonal) \\
+\(\mathbf{L}_s^{(t)}\) & Signed Laplacian matrix: \(\mathbf{D}^{(t)} - \mathbf{A}^{(t)}\) \\
+\(\lambda_{\min}(\cdot)\) & Smallest eigenvalue of a matrix \\
+\(\text{STI}(t)\) & Structural Tension Index: \(\lambda_{\min}(\mathbf{L}_s^{(t)})\) \\
+\(\mathbf{f}^{(t)}\) & Graph signal (net sentiment per node) \\
+\(f_i^{(t)}\)    & Value of graph signal on node \(i\): sum of incident continuous sentiment scores \\
+\(\mathbf{U}\)   & Matrix of eigenvectors (Fourier basis) of \(\mathbf{L}_s\) \\
+\(\hat{\mathbf{f}}\) & Graph Fourier transform coefficients: \(\mathbf{U}^\mathsf{T}\mathbf{f}\) \\
+\(\tilde{\mathbf{U}}_k\) & Approximate first \(k\) eigenvectors from Randomized SVD \\
+\(k\)           & Number of approximated modes (here \(k=30\)) \\
+\(p\)           & Number of low‑frequency modes (here \(p=9\)) \\
+\(E_{\text{low}}(t)\) & Energy in low‑frequency band: \(\sum_{j=1}^{p} \hat{f}_j^2\) \\
+\(E_{\text{high}}(t)\) & Energy in high‑frequency band: \(\sum_{j=p+1}^{k} \hat{f}_j^2\) \\
+\(\text{TR}(t)\) & Tension Ratio: \(E_{\text{high}}(t) / \|\mathbf{f}^{(t)}\|^2\) \\
+\(\mu_{\text{TR}}\) & Mean of TR over all months \\
+\(\sigma_{\text{TR}}\) & Standard deviation of TR \\
+\(\text{Alert}_t\) & Indicator of high‑risk month (TR exceeds \(\mu_{\text{TR}}+\sigma_{\text{TR}}\)) \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Data Collection and Preprocessing}
+\label{sub_method_data_collection}
+
+
+This subsection describes the data source, subreddit selection
+criteria, edge construction procedure, corpus filtering, and production of an analysis-ready signed edge dataset.
+
+
+
+\subsubsection{Source Dataset}
+\label{subsub:source}
+
+The primary dataset was sourced from the Pushshift Reddit archive
+distributed via Academic Torrents~\cite{20_Watchful2025}, which
+provides structured submission dump files for Reddit's 40{,}000 most
+popular subreddits in Zstandard (.zst) compressed format covering the
+period from June 2005 to December 2024. The archive supplies structured
+Reddit metadata including author identifiers, subreddit names, post
+timestamps in Unix Time, post titles, and self-text content. Prior
+work has demonstrated the suitability of large-scale Reddit corpora for
+temporal graph mining~\cite{5_Huber2022} and for studying inter-community
+conflict dynamics~\cite{3_Vachher2020,2_Zhu2022}.
+
+
+\subsubsection{Subreddit Selection Criteria}
+\label{subsub:selection}
+
+From the available 40{,}000 subreddit archives, 230 subreddits were
+selected for inclusion based on two principled criteria applied in
+combination.
+
+\begin{itemize}
+
+  \item \textbf{Interaction density (file-size proxy).}
+    Subreddits with larger compressed dump files were prioritised, as
+    file size serves as a reliable proxy for submission volume and
+    therefore cross-community interaction richness~\cite{5_Huber2022}.
+    Sparse subreddits with few edges produce degenerate Laplacian
+    spectra unsuitable for Graph Signal Processing
+    analysis~\cite{17_Shuman2013}.
+
+  \item \textbf{Structural metadata availability.}
+    Subreddits were required to contain sufficient structured
+    interaction metadata, including author identifiers and textual
+ content suitable for sentiment analysis to enable signed edge
+    construction methods ~\cite{19_Hutto2014}.
+
+\end{itemize}
+
+The resulting 230-subreddit corpus reflects the organic composition of
+Reddit's most active communities during the observation period,
+spanning gaming, technology, politics, news, marketplace, and social
+communities. Content classification was deliberately not applied as a
+selection filter, as the ST-GSP framework operates on structural
+interaction topology rather than content semantics~\cite{18_Ortega2018}.
+Communities that were subsequently banned or quarantined by Reddit
+during the observation period were retained, as their removal events
+constitute empirically relevant structural disruptions for the
+framework~\cite{7_Goglia2024}. A sensitivity analysis confirmed that
+the 0.73\% of edges originating from non-SFW communities produce no
+material change to any spectral finding (see
+Section~\ref{subsub:sensitivity}).
+
+\subsubsection{Edge Construction and Sentiment Assignment}
+\label{subsub:edges}
+
+Cross-subreddit interaction edges were derived from \texttt{r/subreddit}
+cross-reference mentions embedded in post titles and self-text content.
+For each submission, all patterns matching the regular expression
+\texttt{r/([A-Za-z0-9\_]+)} were extracted, generating directed
+$\text{SOURCE} \rightarrow \text{TARGET}$ edges where
+\textsc{source} is the posting subreddit and \textsc{target} is the
+referenced subreddit. This operationalisation captures explicit
+inter-community discourse and instances where one community actively
+references and engages with another and consistent with prior signed
+network studies on social media~\cite{21_Leskovec2010,22_Tang2016}.
+
+Sentiment polarity was assigned to each edge using Valence Aware Dictionary and sEntiment Reasoner (VADER)~\cite{19_Hutto2014} applied to the
+posts’ textual content. VADER is a lexicon-based rule model specifically
+calibrated for social media text and requires no training corpus,
+making it particularly suitable for large-scale unsupervised sentiment
+scoring across heterogeneous Reddit communities. Continuous VADER
+compound scores were retained as the \textsc{sentiment} field and
+additionally binarised to a \textsc{sign} field $\in \{-1, +1\}$ for
+use in the signed Laplacian computation. Self-referential edges
+(\textsc{source} $=$ \textsc{target}) was excluded. Each edge record
+contains four fields: \textsc{source}, \textsc{target},
+\textsc{timestamp} (Unix integer), and \textsc{sentiment} (continuous
+polarity score).
+
+\subsubsection{Corpus Filtering and Data Cleaning}
+\label{subsub:cleaning}
+
+The initial regex-based edge extraction produced 10{,}179{,}780 raw edges targeting 423{,}083 unique strings. Inspection revealed that 84\% of
+target nodes were non-subreddit strings, hexadecimal codes, numeric identifiers, and transaction reference codes that were caught by the broad
+alphanumeric regular expression patterns. This is a known limitation of regex-based cross-reference extraction when applied to trading
+community posts, which embed structured codes in free text, along with subreddit mentions.
+
+% --- Figure 1: file pipeline
+\begin{figure*}[!t]
+    \centering
+    \includegraphics[width=\textwidth, height=0.6\textheight, keepaspectratio=true]{figures/file_convertion.png}
+    \caption{File format conversion pipeline}
+    \label{fig:file_pipeline}
+\end{figure*}
+% --------------
+
+The physical conversion pipeline is illustrated in
+Figure~\ref{fig:file_pipeline}. Each Zstandard dump file was processed sequentially by the extraction script, which decompressed each file using the Zstandard streaming API and wrote a single CSV edge file per subreddit. The 231 resulting CSV files were subsequently merged, cleaned as described above, and serialized to the Apache Parquet format (\texttt{reddit\_signed\_edges\_2014\_2025.parquet})~\cite{5_Huber2022}. All subsequent analyses operate exclusively on the Parquet file, enabling fast columnar queries across 132 monthly partitions without reprocessing the raw archive. Table~\ref{tab:dataset} summarises the final clean dataset properties.
+
+% ----- Table 1: dataset summary
+\begin{table}[h!]
+\centering
+\caption{Final clean dataset properties after corpus filtering and
+         preprocessing.}
+\label{tab:dataset}
+\begin{tabular}{lp{3cm}}
+\toprule
+\textbf{Property} & \textbf{Value} \\
+\midrule
+Raw edges (pre-filter)       & 10{,}179{,}780 \\
+Clean within-corpus edges    & 1{,}870{,}468 \;(18.4\% of raw) \\
+Source subreddits            & 230 \\
+Unique target subreddits     & 227 \\
+Temporal coverage            & January 2014 -- December 2024 \\
+Monthly snapshots            & 132 \\
+Positive edges (sign $=+1$)  & 1{,}332{,}738 \;(71.3\%) \\
+Negative edges (sign $=-1$)  & 537{,}730 \;(28.7\%) \\
+Minimum edges per month      & 3{,}372 \;(February 2018) \\
+Mean edges per month         & 14{,}170 \\
+\bottomrule
+\end{tabular}
+\end{table}
+% -----------
+
+Figure~\ref{fig:dataset_overview} characterizes the raw dataset prior to corpus filtering. Panel~(a) reveals three structural phases: a formation period (2014--2015), a 22-month dormancy phase in 2016 where edge volume collapsed despite a non-zero density and a sustained activation phase from 2017 onward. Three validated conflict events are annotated: the Great Reddit Blackout (July 2015), the gun accessory
+sales ban (March 2018) and API pricing protest (June 2023). Panel~(b) confirms that the 77.8\% positive sentiment ratio remains
+stable across all 132 months, consistent with Social Balance Theory~\cite{15_Heider1946}. Panel~(c) shows globaloffensivetrade and autotldr as extreme volume outliers. Panels~(d) and~(e) show the power-law degree distribution and confirm that \texttt{new} and \texttt{full} appear among the top-degree targets despite not being real subreddit
+communities, directly motivating the corpus filter described above.
+
+
+% ------ Figure 2: dataset overview
+\begin{figure*}[!htb]
+    \centering
+    \subfigure[Monthly edge distribution]{
+        \begin{minipage}{0.48\textwidth}
+            \centering
+            \includegraphics[width=1.05\linewidth]{figures/edge_distribution.pdf}
+        \end{minipage}
+    }\hfill
+    \subfigure[Sentiment distribution]{
+        \begin{minipage}{0.49\textwidth}
+            \centering
+            \includegraphics[width=0.9\linewidth]{figures/sentiment_distribution.pdf}
+        \end{minipage}
+    }
+    
+    \vspace{0.5cm}
+    \subfigure[Top 20 source subreddits]{
+        \begin{minipage}{0.48\textwidth}
+            \centering
+            \includegraphics[width=1.0\linewidth]{figures/top_source_subreddits.pdf}
+        \end{minipage}
+    }\hfill
+    \subfigure[Node degree distribution (log scale)]{
+        \begin{minipage}{0.48\textwidth}
+            \centering
+            \includegraphics[width=1.0\linewidth]{figures/degree_distribution.pdf}
+        \end{minipage}
+    }
+    
+    \vspace{0.5cm}
+    \subfigure[Outlier subreddits above threshold]{
+        \begin{minipage}{0.8\textwidth}
+            \centering
+            \includegraphics[width=0.9\linewidth]{figures/outlier_subreddits_table.pdf}
+        \end{minipage}
+    }
+    
+    \caption{Dataset characterization prior to corpus filtering.}
+    \label{fig:dataset_overview}
+\end{figure*}
+
+
+\subsubsection{Sensitivity Analysis: Non-SFW Community Impact}
+\label{subsub:sensitivity}
+
+The 230-subreddit corpus contains a proportion of communities spanning
+non-SFW content categories. Quantification identified 19 such communities contributing 13{,}619 edges (0.73\% of the clean dataset). Sensitivity analysis confirmed that the exclusion of these 19 communities produces no material change to any spectral finding:
+minimum monthly edges remain at 3{,}171, mean monthly edges at 13{,}931, and all 132 monthly snapshots retain sufficient density for signed Laplacian analysis~\cite{23_Hou2005}. These communities were
+therefore retained in the corpus, as their structural interaction patterns and policy-driven removal events constitute empirically relevant observations for the framework~\cite{3_Vachher2020}.
+%-------------------------------
+
+\subsection{Signed Temporal Network Construction}
+\label{sec:network_construction}
+
+The cleaned edge set, comprising 1,870,468 signed interactions, was transformed into a sequence of temporal network snapshots. This process involves temporal aggregation, adjacency matrix construction, and ensuring that structural properties are suitable for spectral analysis.
+
+\subsubsection{Monthly Snapshot Aggregation}
+\label{subsec:monthly_aggregation}
+
+The cleaned dataset contains edges with Unix timestamps assigned as their \( \tau \) values. The research derived a temporal feature through the equation \( \text{year\_month} = \lfloor \tau / (30 \times 86400) \rfloor \) which enables edge classification into distinct calendar months. The research created a discrete-time temporal network through its aggregation process, which produced the network \( \mathcal{G} = \{G^{(1)}, G^{(2)}, \dots, G^{(T)}\} \) that contains 132 monthly snapshots from January 2014 to December 2024.
+
+Spectral analysis requires the network to establish both connectivity and density between its two main components. The Laplacian spectra lose their correct structure because the system operates with sparse snapshots. The inspection confirmed that all 132 snapshots achieved the required density standards because each month maintained a minimum of 3,372 edges and 127 unique source nodes, thereby establishing a clear and valuable graph Laplacian for each snapshot.
+
+\subsubsection{Signed Adjacency Matrix Formulation}
+\label{subsec:adjacency_matrix}
+
+The number of unique active subreddits at time point \( t \), is defined as \( n^{(t)} \) or \( \mathcal{V}^{(t)}\), where \( \mathcal{V}^{(t)} \) denotes the number of unique subreddits. The entries of the signed adjacency matrix \( \mathbf{A}^{(t)} \) indicate the strength of the connection between each pair of subreddits. Therefore, the size of the matrix is equal to the number of subreddits.
+The matrix has a dimension of $ n^ {(t )} \times n ^ {(t)}$. Although raw interactions are directional, the matrix is symmetrised to produce an undirected signed graph, consistent with the requirements of Social Balance Theory. Each directed edge from node $i$ to $j$ with sentiment $s_{ij}$ contributes equally to both $A_{ij}$ and $A_{ji}$. Each directed interaction from node \(i\) to node \(j\) with the sentiment defined by the value of $s _{ ij } \in \{ + 1,- 1\}$ will equally contribute to both $a _{ ij }$ and $a _{ ji }$. The symmetric adjacency matrix can be obtained as follows:
+\begin{equation}
+\label{eq:symmetric_adjacency}
+\mathbf{A}_{\mathrm{sym}}^{(t)} = \mathbf{A}^{(t)} + (\mathbf{A}^{(t)})^{\mathsf{T}},
+\end{equation}
+
+which uses clamped entries that restrict values to \( \{-1, 0, +1\} \) to uphold the signed convention. The system generates a zero diagonal because it excludes self-referential edges, for which \( i = j \). This formulation aligns with established conventions in signed network analysis \cite{21_Leskovec2010, 22_Tang2016}. The networks have a range of 7,726 to 16,371 nodes with $n^{(t)}$ because we used sparse matrix storage for each \( \mathbf{A}_{\text{sym}}^{(t)} \) in the Compressed Sparse Row (CSR) format with 32-bit floating-point precision to achieve memory efficiency and computational optimization.
+
+%--Objective 1---
+\subsection{Structural Tension Index via Signed Laplacian}
+\label{sec:objectivel_sti}
+
+The first objective is to quantify the level of structural balance, or conversely, the tension within each monthly network snapshot. This is achieved by analyzing the spectral properties of the signed Laplacian matrix, a formulation rooted in social balance theory.
+
+\subsubsection{Signed Laplacian Construction}
+
+The signed Laplacian matrix \( \mathbf{L}_s \in \mathbb{R}^{n \times n} \) was created from the symmetric signed adjacency matrix \( \mathbf{A} = \mathbf{A}_{\text{sym}}^{(t)} \). The absolute degree matrix \( \mathbf{D} \) is a diagonal matrix that shows the total weighted degree of each node through its entries, which contain all node degree values but disregard interaction signs. The absolute degree of node i is defined in the following equation:
+
+\begin{equation}
+\label{eq:abs_degree}
+\mathbf{D}_{ii} = \sum_{j=1}^{n} |a_{ij}|.
+\end{equation}
+
+The signed Laplacian is then formulated as follows:
+
+\begin{equation}
+\label{eq:signed_laplacian}
+\mathbf{L}_s = \mathbf{D} - \mathbf{A}.
+\end{equation}
+
+The spectral theory of signed graphs provides a basis for this formulation, which creates a positive semidefinite matrix that describes the frustration of the graph. A perfectly balanced graph, which allows partitioning into two sets with positive intra-cluster edges and negative inter-cluster edges, has a singular \( \mathbf{L}_s \) matrix. The smallest eigenvalue of the network reveals its degree of imbalance which scientists refer to as "structural tension."
+
+\subsubsection{The Structural Tension Index (STI)}
+
+For each monthly snapshot \( t \), we define the Structural Tension Index (STI) as the smallest eigenvalue of its corresponding signed Laplacian:
+
+\begin{equation}
+\label{eq:sti_definition}
+\text{STI}(t) = \lambda_{\text{min}}\left(\mathbf{L}_s^{(t)}\right).
+\end{equation}
+
+The theoretical basis for this index is grounded in the work of Heider \cite{heider1946attitudes} and its graph-theoretic extension by Cartwright and Harary \cite{cartwright1956structural}. A signed Laplacian for a completely balanced network shows its singularity because it produces the result \( \lambda_{\text{min}} = 0 \). The matrix becomes increasingly positive definite because structural inconsistencies (frustrated cycles) become more numerous while \( \lambda_{\text{min}} \) reaches a positive threshold. The higher STI value shows that the network experiences more structural frustration because it has more triangles that break Social Balance Theory and it links to times when inter-community conflicts were most intense~\cite{23_Hou2005}
+
+\subsubsection{Eigenvalue Computation Strategy}
+
+Hybrid computational method was used to determine the value of 
+$\lambda_{\text{min}}$ because the size of $n^{(t)}$ data changed 
+throughout the study. For snapshots with n(t) < 500 nodes, a full dense eigendecomposition was computed via scipy.linalg.eigvalsh, which wraps LAPACK routines for symmetric matrices. We applied an iterative sparse 
+eigensolver to most of our dataset because its larger snapshots had 
+$n^{(t)} \ge 500$. The ARPACK library is what is used in
+scipy.sparse.linalg.eigsh() function that scientists use to find 
+the lowest eigenvalue ($k=1$, which='SM'). A system was built into this that 
+would clamp to zero any eigenvalue that was computed as having an absolute 
+value less than $10^{-10}$ since the iterative solvers were experiencing 
+floating point errors. The system generated a univariate time series of 
+$\text{STI}(t)$ from $t = 1 \dots 132$ which indicated how the macroscopic 
+network tension evolves over time.
+
+%----Objective 2--------% 
+\subsection{Multiscale Graph Fourier Transform Filter}
+\label{sec:objective2_gft}
+
+Although the STI provides a global, scalar measure of network tension, it does not localize this tension to specific frequencies or nodes. To achieve a multiscale decomposition of conflict, we employed the Graph Fourier Transform (GFT). This allows us to separate globally smooth community signals from localized high-frequency conflict bursts.
+
+\subsubsection{The Graph Fourier Transform (GFT)}
+\label{subsec:gft_theory}
+
+The GFT provides a spectral representation of signals defined on the nodes of a graph \cite{17_Shuman2013, 18_Ortega2018}. It is analogous to the classical Fourier transform, in which the eigenfunctions of the Laplace operator are used as a basis. For a signed graph with Laplacian \( \mathbf{L}_s \), we compute its eigendecomposition as follows:
+
+\begin{equation}
+\label{eq:eigen_decomp}
+\mathbf{L}_s = \mathbf{U} \boldsymbol{\Lambda} \mathbf{U}^{\mathsf{T}},
+\end{equation}
+
+where \( \boldsymbol{\Lambda} = \text{diag}(\lambda_1, \lambda_2, \dots, \lambda_n) \) is a diagonal matrix of eigenvalues sorted in ascending order (\( 0 \leq \lambda_1 \leq \lambda_2 \dots \leq \lambda_n \)), and \( \mathbf{U} = [\mathbf{u}_1, \mathbf{u}_2, \dots, \mathbf{u}_n] \) is an orthonormal matrix whose columns are the corresponding eigenvectors. These eigenvectors, or Fourier modes, form an orthonormal basis for the space of graph signals. The GFT of a signal \( \mathbf{f} \in \mathbb{R}^n \) defined on the graph nodes is then given by its projection onto this basis:
+
+\begin{equation}
+\label{eq:gft}
+\hat{\mathbf{f}} = \mathbf{U}^{\mathsf{T}} \mathbf{f},
+\end{equation}
+
+where \( \hat{\mathbf{f}} \) is the vector of GFT coefficients. The coefficient \( \hat{f}_k \) represents the content of the signal at frequency \( \lambda_k \). Low-frequency modes (small \( \lambda_k \)) capture slowly varying, smooth signal components across the graph, corresponding to stable community consensus. High-frequency modes (large \( \lambda_k \)) capture rapidly varying, localized signal components, which, in our context, represent conflict and disagreement \cite{17_Shuman2013}.
+
+\subsubsection{Graph Signal Definition}
+\label{subsec:graph_signal}
+
+To analyze community tension, we define a graph signal \( \mathbf{f}^{(t)} \in \mathbb{R}^{n^{(t)}} \) for each monthly snapshot. The value at each node \( i \) is the net sentiment contribution of that subreddit, calculated by aggregating the continuous VADER sentiment scores of all incident edges:
+
+\begin{equation}
+\label{eq:graph_signal}
+f_i^{(t)} = \sum_{j \in \mathcal{N}(i)} \text{SENTIMENT}_{ij}^{(t)},
+\end{equation}
+
+where \( \mathcal{N}(i) \) is the set of neighbors of node \( i \), and \( \text{SENTIMENT}_{ij}^{(t)} \) is the continuous sentiment score (range $[-1,1]$) of the interaction between \( i \) and \( j \) in month \( t \). This signal encodes the signed activity level of each community, with large positive values indicating a positive net sentiment contribution and large negative values indicating a negative net sentiment.
+
+\subsubsection{Randomized SVD for Basis Approximation}
+\label{subsec:rsvd_approximation}
+
+Computing the full eigendecomposition of \( \mathbf{L}_s^{(t)} \) for graphs with \( n \approx 10^4 \) nodes is computationally prohibitive (\( \mathcal{O}(n^3) \)). To enable a tractable analysis, we approximate the leading \( k \) eigenvectors of the GFT basis using a Randomized Singular Value Decomposition (RSVD) algorithm \cite{25_Halko2011}. The RSVD provides a computationally efficient approximation with a bounded error, reducing the complexity to \( \mathcal{O}(n \times k) \).
+
+We applied RSVD to each signed Laplacian \( \mathbf{L}_s^{(t)} \) to compute the first \( k = 30 \) eigenvectors, \( \tilde{\mathbf{U}}_k \in \mathbb{R}^{n \times k} \), which serve as an approximate GFT basis. To enhance the accuracy, we employed \( n_{\text{iter}} = 3 \) power iterations. Since the RSVD is applied to the symmetric positive semi-definiteLaplacian $\mathbf{L}_s^{(t)}$, the dominant singular vectors
+approximate the leading eigenvectors; the smallest singular value
+recovered serves as an approximation of $\lambda_{\min}$, consistent
+with the STI definition in Objective~1.
+
+\subsubsection{Multiscale Energy Decomposition and Tension Ratio}
+\label{subsec:energy_decomposition}
+
+The approximate GFT coefficients for a snapshot are \( \hat{\mathbf{f}}_k = \tilde{\mathbf{U}}_k^{\mathsf{T}} \mathbf{f} \). To separate the stable structure from conflict bursts, the \( k = 30 \) modes are partitioned into two frequency bands based on a percentile threshold. The first \( p = 9 \) modes (30th percentile) are designated as the low-frequency band, representing a globally smooth, stable community structure. The remaining \( k-p = 21 \) modes are designated as the high-frequency band, which is intended to capture localized conflict signals.
+
+The total signal energy, \( \|\mathbf{f}\|^2 \), is distributed across these bands. We compute the energy in the high-frequency band as follows:
+
+\begin{equation}
+\label{eq:high_freq_energy}
+E_{\text{high}}(t) = \sum_{j=p+1}^{k} \hat{f}_j^2,
+\end{equation}
+
+To obtain a scale-invariant measure of conflict that is comparable across months with varying network sizes and signal magnitudes, we define the Tension Ratio (TR):
+
+\begin{equation}
+\label{eq:tension_ratio}
+\text{TR}(t) = \frac{E_{\text{high}}(t)}{\|\mathbf{f}^{(t)}\|^2}.
+\end{equation}
+
+The tension ratio represents the proportion of the network signal energy concentrated in high-frequency conflict-related modes. A statistical analysis revealed a significant negative correlation between the monthly graph size \( n^{(t)} \) and \( \text{TR}(t) \) (Pearson's \( r = -0.601 \)). This is consistent with the behavior of a fixed-rank approximation applied to graphs of varying scales, in which larger graphs, the same \( k \) low-frequency modes capture a proportionally smaller fraction of the spectral energy, resulting in a higher baseline \( E_{\text{high}} \). This effect, although a known limitation of fixed-rank methods, is systematic and does not preclude relative comparisons.
+
+\subsubsection{Alert Threshold for High-Risk Months}
+\label{subsec:alert_threshold}
+
+To identify periods of anomalous community-wide conflict, we established a threshold for the tension ratio. Following standard anomaly detection practices \cite{chandola2009anomaly}, a month \( t \) is flagged as high-risk if its tension ratio exceeds one standard deviation above the mean:
+
+\begin{equation}
+\label{eq:alert_threshold}
+\text{Alert}_t = \mathbb{1}\left( \text{TR}(t) > \mu_{\text{TR}} + \sigma_{\text{TR}} \right),
+\end{equation}
+
+where \( \mu_{\text{TR}} \) and \( \sigma_{\text{TR}} \) are the mean and standard deviation of the tension ratio time series, respectively. This data-driven threshold yielded a cutoff value of 0.244, identifying 26 months as high-risk periods for further validation.
+
+
+%-----------Objective 3------
+\subsection{Bridge Subreddit Detection via Spectral Leakage}
+\label{sec:objective3_bridge}
+
+While the STI and Tension Ratio provide global, scalar summaries of
+network tension, they do not identify which specific communities are
+responsible for propagating conflict signals across the community
+boundaries. Objective~3 addresses this through a node-level spectral
+analysis that identifies bridge subreddits, communities
+whose interaction patterns span multiple community clusters,
+thereby facilitating cross-community sentiment diffusion.
+
+\subsubsection{Spectral Leakage as a Bridge Node Indicator}
+\label{subsec:spectral_leakage}
+
+The approximate GFT basis $\tilde{\mathbf{U}}_k \in \mathbb{R}^{n
+\times k}$ computed in Objective~2 encodes the participation of each
+nodes in each Fourier mode. Specifically, the entry $\tilde{U}_{ij}$
+represents the contribution of node $i$ to the $j$-th Fourier mode.
+Nodes whose energy is concentrated in low-frequency modes participate
+predominantly in a globally smooth, stable community structure. Nodes
+whose energy leaks into high-frequency modes are structurally
+positioned at the boundaries between communities, generating locally
+concentrated conflict signals that disrupt smooth global
+structures ~\cite{17_Shuman2013, 18_Ortega2018}.
+
+For each node $i$ in monthly snapshot $t$, we define its total
+spectral energy and high-frequency spectral energy as:
+
+\begin{equation}
+\label{eq:node_total_energy}
+E_i^{\text{total}}(t) = \sum_{j=1}^{k} \tilde{U}_{ij}^2,
+\end{equation}
+
+\begin{equation}
+\label{eq:node_high_energy}
+E_i^{\text{high}}(t) = \sum_{j=p+1}^{k} \tilde{U}_{ij}^2,
+\end{equation}
+
+where $p = \lfloor 0.3k \rfloor = 9$ is the low-frequency cutoff
+The index is defined in Section~\ref{subsec:energy_decomposition}. The
+Spectral Leakage Ratio of node $i$ in month $t$ is then:
+
+\begin{equation}
+\label{eq:leakage_ratio}
+\text{SL}_i(t) = \frac{E_i^{\text{high}}(t)}{E_i^{\text{total}}(t)
++ \varepsilon},
+\end{equation}
+
+where $\varepsilon = 10^{-10}$ is the numerical stability constant. A
+high $\text{SL}_i(t)$ indicates that node $i$'s interaction patterns
+do not conform to the smooth global community structure and instead
+generate locally concentrated, high-frequency signals --- the
+defining characteristics of a structural bridge.
+
+\subsubsection{Bridge Node Identification and Frequency}
+\label{subsec:bridge_identification}
+
+For each monthly snapshot $t$, the top 10 nodes ranked by spectral
+leakage ratio were recorded as bridge candidates, yielding a set of
+bridge records for 132 months. The bridge frequency
+of a subreddit is its total count of top-10 bridge appearances across
+for the entire observation period. Table~\ref{tab:bridge_freq} summarises
+the top bridge subreddits using this metric.
+
+\begin{table*}[htbp]
+\centering
+\caption{Top bridge subreddits by total top-10 spectral leakage appearances across 132 monthly snapshots.}
+\label{tab:bridge_freq}
+\begin{tabular}{llll}
+\hline
+\textbf{Rank} & \textbf{Subreddit} & \textbf{Appearances} & \textbf{Category} \\
+\hline
+1  & \texttt{market76}              & 48 & Gaming marketplace \\
+2  & \texttt{gunaccessoriesforsale} & 30 & Gun trading (banned Mar 2018) \\
+3  & \texttt{dnd}                   & 27 & Gaming (D\&D) \\
+4  & \texttt{leagueoflegends}       & 17 & Gaming \\
+5  & \texttt{globaloffensivetrade}  & 17 & Gaming marketplace \\
+6  & \texttt{mechanicadvice}        & 12 & Technical advice \\
+7  & \texttt{fashionreps}           &  9 & Marketplace \\
+8  & \texttt{destinythegame}        & 15 & Gaming \\
+\hline
+\end{tabular}
+\end{table*}
+
+\noindent A key finding is that high bridge frequency is structurally
+orthogonal to high raw interaction volume. \texttt{r/market76} ranked
+first by bridge frequency yet ranked seventh by total edge volume,
+while \texttt{r/autotldr}, the second-highest volume node, had
+zero-bridge appearance. This demonstrates that structural bridge
+importance requires spectral analysis and cannot be recovered by
+degree-based method.
+
+\subsubsection{Precursor Analysis}
+\label{subsec:precursor_analysis}
+
+To assess the predictive utility of bridge subreddit identification,
+A precursor analysis was conducted linking bridge appearances to
+subsequent high-risk months. A subreddit was classified as a
+conflict precursor if it appeared in the top-10 bridge
+position in month $t$ while month $t{+}1$ or $t{+}2$ was flagged as
+high-risk ($\text{TR}(t) > 0.244$). The precursor frequency
+of each subreddit was computed as the total count of such a precursor
+appearances across the full observation period:
+
+\begin{equation}
+\label{eq:precursor_freq}
+\text{PF}(v) = \sum_{t=1}^{T-2}
+\mathbb{1}\!\left( v \in \mathcal{B}_{10}(t) \;\wedge\;
+\bigl(\text{Alert}_{t+1} = 1 \;\vee\; \text{Alert}_{t+2} = 1\bigr)
+\right),
+\end{equation}
+
+where $\mathcal{B}_{10}(t)$ is the set of top-10 bridge nodes in
+month $t$ and $\text{Alert}_t$ is the binary high-risk indicator from
+Equation~\ref{eq:alert_threshold}. The 1--2 month lookahead window is
+motivated by the empirically observed 2-month structural propagation
+lag between platform-level conflict events and their spectral
+manifestation, confirmed across four validated ground truth events
+(Section~\ref{sec:validation}).
+
+\subsubsection{Sentiment Diffusion Analysis}
+\label{subsec:sentiment_diffusion}
+
+To complement the spectral bridge analysis, a node-level sentiment
+trajectory was computed for each top bridge subreddit by aggregating
+all edges involving that subreddit and computing the monthly mean
+SENTIMENT score. This analysis identifies subreddits that are
+simultaneously structural bridges (high spectral leakage) and active
+negative sentiment sources (sustained negative mean sentiment),
+representing the highest-risk diffusion hubs for network-wide
+toxicity propagation.
+
+%=============================================================
+\subsection{Predictive Modelling}
+\label{sec:predictive_model}
+%=============================================================
+
+\subsubsection{Feature Engineering}
+\label{subsec:feature_engineering}
+
+A logistic regression classifier was trained to predict whether a
+given month would be classified as high-risk ($\text{TR}(t) > 0.244$) based on GFT-derived features from preceding months. Six temporal features were constructed from the GFT pipeline outputs. Table~\ref{tab:features} summarizes the six features used.
+The three lag features (\texttt{tension\_lag1}, \texttt{tension\_lag2}, \texttt{tension\_lag3}) capture the immediate, short‑term, and medium‑term state of the tension ratio, respectively, based on the observed 2‑month structural propagation lag (Section ~3.7). The raw energy components (\texttt{high\_energy\_lag1}, \texttt{low\_energy\_lag1}) decouple signal magnitude from proportion, while \texttt{tension\_trend} encodes the direction of change. Months with insufficient history (first three snapshots) are excluded from training. No additional feature selection was applied, as the six features represent the complete set of interpretable GFT‑derived temporal statistics.
+
+\begin{table*}[!t]
+\centering
+\caption{Predictive model features derived from GFT pipeline outputs.}
+\label{tab:features}
+%\hspace{0.7cm}
+\begin{tabular}{lll}
+\toprule
+\textbf{Feature} & \textbf{Definition} & \textbf{Rationale} \\
+\midrule
+\texttt{tension\_lag1}     & $\mathrm{TR}(t-1)$
+    & Most recent tension state \\
+\texttt{tension\_lag2}     & $\mathrm{TR}(t-2)$
+    & Short-term trend context \\
+\texttt{tension\_lag3}     & $\mathrm{TR}(t-3)$
+    & Medium-term trend context \\
+\texttt{high\_energy\_lag1} & $E_{\mathrm{high}}(t-1)$
+    & Raw high-frequency energy \\
+\texttt{low\_energy\_lag1}  & $E_{\mathrm{low}}(t-1)$
+    & Stable community baseline \\
+\texttt{tension\_trend}    & $\mathrm{TR}(t-1) - \mathrm{TR}(t-2)$
+    & Month-over-month direction \\
+\bottomrule
+\end{tabular}
+\end{table*}
+
+\subsubsection{Model Training and Evaluation}
+\label{subsec:model_training}
+
+A logistic regression classifier with balanced class weights
+(\texttt{class\_weight='balanced'}) was trained using a temporal train--test split of 75\%/25\% (99 training months and 33 test months).
+Temporal ordering was strictly preserved and the test set consists
+exclusively of the most recent 33 months to prevent data leakage
+and ensure evaluation reflects genuine prospective prediction rather
+than interpolation~\cite{8_ma2025}.
+
+Features were standardised using z-score normalisation
+(StandardScaler) fit on the training set only and applied to
+the test set, preventing information leakage from future observations.
+Model performance was evaluated using precision, recall, F1-score, and
+overall accuracy. Particular emphasis was placed on recall for the
+high-risk class, given the cost asymmetry between false negatives
+(missed conflict periods) and false positives (unnecessary alerts) in
+moderation contexts.
+
+\subsubsection{Baseline Comparison}
+\label{subsec:baseline_comparison}
+
+The ST-GSP Tension Ratio was benchmarked against a naive baseline
+metric: the monthly negative edge ratio, defined as the proportion of
+edges with $\text{sign} = -1$ in each monthly snapshot. This baseline
+represents the simplest possible conflict detection approach, direct
+counting of negative interactions without any structural or spectral
+processing. The same mean $+$ $1\sigma$ threshold was applied to the
+baseline metric to ensure comparability. Agreement between the two
+methods was assessed by comparing their sets of flagged months and
+their respective detections of validated ground truth events.
+
+%=============================================================
+\subsection{Ground Truth Validation}
+\label{sec:validation}
+%=============================================================
+
+External validity of the framework was assessed by cross-referencing
+flagged periods and bridge subreddit findings against four documented
+Reddit platform events spanning the full observation period, obtained
+from public records, news archives, and Reddit's official transparency
+reports:
+
+\begin{itemize}
+
+  \item \textbf{The Great Reddit Blackout (July 2015).} The
+    termination of community liaison Victoria Taylor caused over
+    1{,}000 subreddits to coordinate a platform-wide protest.
+    The framework detected sustained STI elevation across
+    January--September 2015.
+
+  \item \textbf{Reddit Gun Accessory Sales Ban (March 2018).}
+    Reddit's policy update prohibiting firearm and accessory
+    transactions resulted in the forced closure of
+    \texttt{r/GunAccessoriesForSale}. The framework detected a
+    sharp sentiment spike to $-1.0$ in \texttt{r/gunaccessoriesforsale}
+    in March 2018, the only subreddit in the corpus to reach this
+    extreme value, consistent with Objective~3's bridge and
+    sentiment diffusion analysis.
+
+  \item \textbf{Adult Community Quarantines (January 2023).}
+    Reddit's wave of adult community quarantines preceding the
+    April 2023 API pricing announcement was detected through the
+    abrupt disappearance of bridge subreddit
+    \texttt{r/dirtykikpals}, which recorded peak activity of 143
+    edges in December 2022 before collapsing to 11 edges in
+    January 2023.
+
+  \item \textbf{Reddit API Pricing Controversy (June 2023).}
+    Reddit's decision to charge third-party developers for API
+    access prompted a coordinated blackout involving over
+    8{,}000 subreddits. The framework detected high-risk periods in
+    August 2023 ($\text{TR} = 0.285$) and October 2023
+    ($\text{TR} = 0.259$), consistent with the empirically
+    observed a 2-month structural propagation lag.
+
+\end{itemize}
+
+For each event, the framework's flagged months were compared against
+the event date and its immediate aftermath (up to three months) to
+assess the detection sensitivity. The naive baseline was subjected to
+identical validation to enable direct comparison of detection
+capability.
+
+%=============================================================
+\subsection{Implementation and Computational Environment}
+\label{sec:implementation}
+%=============================================================
+
+The complete pipeline was implemented in Python~3.13 using the
+computational stack summarized in Table~\ref{tab:implementation}.
+
+\begin{table*}[htbp]
+\centering
+\caption{Implementation stack for the ST-GSP pipeline.}
+\label{tab:implementation}
+\begin{tabular}{lll}
+\toprule
+\textbf{Component} & \textbf{Library / Tool}
+& \textbf{Purpose} \\
+\midrule
+Data processing    & Pandas, NumPy
+    & Tabular operations, array computation \\
+Sparse matrices    & SciPy (\texttt{sparse})
+    & CSR matrix construction, Laplacian \\
+Eigenvalue solver  & SciPy (\texttt{linalg}, \texttt{sparse.linalg})
+    & \texttt{eigvalsh} (dense), \texttt{eigsh} (sparse) \\
+Randomized SVD     & scikit-learn (\texttt{extmath})
+    & \texttt{randomized\_svd}, $k{=}30$, \texttt{n\_iter}{=}3 \\
+Predictive model   & scikit-learn
+    & \texttt{LogisticRegression}, \texttt{StandardScaler} \\
+Serialisation      & PyArrow
+    & Apache Parquet format \\
+Visualisation      & Matplotlib, Seaborn
+    & All figures and heatmaps \\
+Progress monitoring & tqdm
+    & Per-snapshot progress bars \\
+Hardware           & Apple Mac Mini M4
+    & 10-core CPU, unified memory \\
+\bottomrule
+\end{tabular}
+\end{table*}
+
+\noindent Total computation time for the complete pipeline across 132
+monthly snapshots were approximately 4 to 6 minutes using Joblib
+parallelization across all available CPU cores. The Randomized SVD
+approximation was the primary computational bottleneck, replacing full eigendecomposition, which would have required an estimated 4$+$ hours for graphs of this scale~\cite{25_Halko2011}.
+
+% \subsection{Bridge Sub-reddit Detection and Conflict Spread Prediction}\label{sub_method_bridge_sub_reddit_detection}
+% Define bridge communities, specify detection criteria/features and outline the forecast of conflict diffusion paths.
+
+% \subsection{Predictive Modelling}\label{sub_method_predictive_modelling}
+% The paper will introduce features, target variables, model choices, training setup, baselines and evaluation metrics.
+
+% \subsection{Implementation and Computational Environment}\label{sub_method_implementation_and_computational_environment}
+% List the tools, libraries and hardware. Describe runtime settings, give details for reproducibility and justify the choices of parameter configurations.
+
+
+
+% \section{Results} \label{results}
+% \subsection{Ground Truth Validation}
+
+% \section{Conclusion} \label{conclusion}
+
+
+%% Loading bibliography style file
+% \bibliographystyle{model1-num-names}
+% \bibliographystyle{cas-model2-names}
+\bibliographystyle{unsrtnat}
+
+% Loading bibliography database
+\bibliography{cas-refs}
+
+% % Biography
+% \bio{}
+% % Here goes the biography details.
+% \endbio
+
+% \bio{pic1}
+% % Here goes the biography details.
+% \endbio
+
+\end{document}
+
