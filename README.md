@@ -1,4 +1,4 @@
-# Temporal Network-Based Early Warning of Online Community Behaviour in Reddit
+# Temporal Network-Based Early Warning of Online Community Behaviour on Reddit
 
 > **Signed Temporal Graph Signal Processing (ST-GSP) Framework**  
 > American International University-Bangladesh  
