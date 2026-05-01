@@ -2,7 +2,7 @@
 
 > **Signed Temporal Graph Signal Processing (ST-GSP) Framework**  
 > American International University-Bangladesh  
-> Papri Saha · Tasnuva Afrin · Shuvro Sankar Sen · Ahnaf Abdullah Zayad · Sudipta Kumar Das
+> Shuvro Sankar Sen · Papri Saha · Sudipta Kumar Das · Tasnuva Afrin · Ahnaf Abdullah Zayad · Rajarshi Roy Chowdhury
 
 ---
 
@@ -32,26 +32,22 @@ The framework was applied to a 10-year Reddit corpus (2014–2024) of 1,870,468 
 
 ```
 .
-├── pipeline.ipynb                          # Main analysis notebook
+├── pipeline.ipynb                               # Main analysis notebook (GFT pipeline)
 ├── data/
-│   ├── subreddits24/                       # Raw .zst subreddit dump files (231 files)
-│   │   └── *_edges_2014_2025.csv          # Extracted per-subreddit edge CSVs
-│   ├── reddit_signed_edges_2014_2025.parquet   # Clean within-corpus dataset (1.87M edges)
+│   ├── subreddits24/                            # Raw .zst subreddit dump files (231 files)
+│   │   └── *_edges_2014_2025.csv               # Extracted per-subreddit edge CSVs
+│   └── reddit_signed_edges_2014_2025.parquet   # Clean within-corpus dataset (1.87M edges)
 ├── files/
-│   ├── reddit.ipynb                           # Raw .zst subreddit dump files to CSV files (231 files)
-│   ├── marge_all_files.ipynb                  # obtaining clean parquet file to work with 
-│   ├── pipeline.ipynb                         # Implementing GFT pipeline 
+│   ├── reddit.ipynb                             # .zst dump extraction → per-subreddit CSV files
+│   └── marge_all_files.ipynb                   # Merges CSVs → clean Parquet file
 ├── outputs/
-│   ├── dataset_overview.png               # Figure 1: Dataset characterisation (4 panels)
-│   ├── network_july2019_v2.png            # Figure 2: Network graph — July 2019
-│   ├── tension_over_time.png              # Figure 3a: STI time series
-│   ├── tension_heatmap.png                # Figure 3b: STI heatmap (year × month)
-│   ├── gft_filter.png                     # Figure 4: GFT multiscale decomposition
-│   ├── bridge_detection.png               # Figure 5: Bridge subreddit heatmap
-│   └── confusion_matrix.png               # Figure 6: Predictive model results
-└── docs/
-    ├── 
-    └── 
+│   ├── dataset_overview.png                    # Dataset characterisation (4 panels)
+│   ├── network_july2019_v2.png                 # Network graph — July 2019 (peak tension month)
+│   ├── sti_over_time.png                       # STI time series (2 panels)
+│   ├── network_tension_heatmap.png             # STI heatmap (year × month)
+│   ├── high-risk_months.png                    # GFT multiscale decomposition
+│   ├── Bridge_Subreddit_Leakage_Ratio_Over_Time # Bridge subreddit analysis (3 panels)
+│   └── confusion_matrix.png                    # Predictive model results
 ```
 
 ---
@@ -75,7 +71,7 @@ Raw Pushshift Data (.zst)
 3. Objective 1 — Structural Tension Index (STI)
    - Signed Laplacian: Ls = D − A
    - STI = λmin(Ls) per month
-   - Solver: eigvalsh (n<500) / eigsh ARPACK (n≥500)
+   - Solver: eigvalsh (n < 500) / eigsh ARPACK (n ≥ 500)
         ↓
 4. Objective 2 — Multiscale GFT Filter
    - Randomized SVD: k=30 modes, n_iter=3
@@ -83,11 +79,15 @@ Raw Pushshift Data (.zst)
    - Tension Ratio = E_high / ‖f‖²
    - Alert threshold: mean + 1σ = 0.244
         ↓
-5. Objective 3 — Bridge Detection & Prediction
-   - Spectral leakage ratio per node
-   - Top-10 bridge nodes per month
-   - Logistic Regression on 6 GFT-derived features
-   - Temporal split 75/25, class_weight='balanced'
+5. Objective 3 — Bridge Subreddit Detection
+   - Spectral leakage ratio per node per month
+   - Top-10 bridge nodes identified per monthly snapshot
+   - Precursor analysis: 1–2 month lookahead window
+        ↓
+6. Predictive Modelling
+   - Logistic Regression on 6 GFT-derived temporal features
+   - Temporal train/test split 75/25, class_weight='balanced'
+   - Z-score normalisation fitted on training set only
 ```
 
 ---
@@ -99,7 +99,7 @@ Raw Pushshift Data (.zst)
 | Property | Value |
 |---|---|
 | Raw edges | 10,179,780 |
-| Clean within-corpus edges | 1,870,468 |
+| Clean within-corpus edges | 1,870,468 (18.4% of raw) |
 | Source subreddits | 230 |
 | Unique target subreddits | 227 |
 | Temporal coverage | January 2014 – December 2024 |
@@ -111,7 +111,7 @@ Raw Pushshift Data (.zst)
 
 ### Why 18.4% of raw edges were retained
 
-The raw regex pattern `r/([A-Za-z0-9_]+)` extracted 10.17M edges targeting 423,083 unique strings. Inspection revealed 84% of target nodes were non-subreddit strings (hex codes, numeric IDs, transaction references) from trading subreddit posts. A corpus filter retaining only edges where TARGET ∈ known SOURCE subreddits reduced the dataset to 1,870,468 genuine within-corpus interactions.
+The raw regex pattern `r/([A-Za-z0-9_]+)` extracted 10.17M edges targeting 423,083 unique strings. Inspection revealed 84% of target nodes were non-subreddit strings (hex codes, numeric IDs, transaction references embedded in trading community posts). A corpus filter retaining only edges where TARGET ∈ known SOURCE subreddits reduced the dataset to 1,870,468 genuine within-corpus interactions.
 
 ---
 
@@ -134,13 +134,16 @@ pip install pandas numpy scipy scikit-learn matplotlib seaborn networkx tqdm pya
 | pyarrow | any | Parquet I/O |
 
 **Hardware used:** Apple Mac Mini M4 (10-core CPU, unified memory)  
-**Runtime:** ~4–6 minutes for full pipeline across 132 monthly snapshots
+**Runtime:** ~4–6 minutes for full pipeline across 132 monthly snapshots (Joblib parallelisation)
 
 ---
 
 ## Reproducing Results
 
 ### Step 1 — Data preparation
+
+Run `files/reddit.ipynb` to extract per-subreddit CSVs from the raw `.zst` Pushshift dump files, then run `files/marge_all_files.ipynb` to merge and filter them into the clean Parquet file.
+
 ```python
 import pandas as pd
 
@@ -161,28 +164,38 @@ monthly_edges['sign'] = monthly_edges['SENTIMENT']
 ```
 
 ### Step 2 — Run full pipeline
-Open and run `pipeline.ipynb` sequentially. All five stages are self-contained cells with progress bars.
+
+Open and run `pipeline.ipynb` sequentially. All stages are self-contained cells with progress bars via `tqdm`.
 
 ### Step 3 — Expected outputs
 
 **Objective 1 (STI):**
 ```
-Active months: 32 / 132
+Active months (λmin > 0): 32 / 132
 Peak: July 2019, λmin = 0.143
 Mean tension (all months): 0.019
+Mean tension (active months only): 0.082
 ```
 
 **Objective 2 (GFT):**
 ```
-Alert threshold: 0.244
+Mean Tension Ratio: 0.169
+Standard deviation: 0.075
+Alert threshold (mean + 1σ): 0.244
 High-risk months flagged: 26
-Mean tension ratio: 0.169
 ```
 
-**Objective 3 (Bridge + Prediction):**
+**Objective 3 (Bridge Detection):**
 ```
-Top bridge: market76 (48 appearances)
-Model accuracy: 94%
+Top bridge subreddit: r/market76 (48 top-3 appearances)
+r/gunaccessoriesforsale: 30 appearances, 18 precursor instances
+```
+
+**Predictive Model:**
+```
+Overall accuracy: 94% (33-month test set)
+High-risk recall: 1.00
+High-risk precision: 0.88
 False negatives: 0
 ```
 
@@ -190,23 +203,24 @@ False negatives: 0
 
 ## Validated Ground Truth Events
 
-| # | Event | Date | Detection |
-|---|---|---|---|
-| 1 | Great Reddit Blackout | July 2015 | STI elevated Jan–Sep 2015 ✅ |
-| 2 | Reddit Gun Accessory Ban | March 2018 | r/gunaccessoriesforsale sentiment → −1.0 ✅ |
-| 3 | Adult Community Quarantines | January 2023 | r/dirtykikpals bridge collapse detected ✅ |
-| 4 | Reddit API Pricing Protest | June 2023 | 2-month lag: Aug + Oct 2023 flagged ✅ |
+| # | Event | Date | Detection Method | Result |
+|---|---|---|---|---|
+| 1 | Great Reddit Blackout | July 2015 | Obj. 1 (STI) + Obj. 2 (TR) | STI elevated Jan–Sep 2015; 13 consecutive flagged months ✅ |
+| 2 | Reddit Gun Accessory Sales Ban | March 2018 | Obj. 3 (bridge sentiment) | r/gunaccessoriesforsale mean sentiment → −1.0 (only subreddit to reach this value) ✅ |
+| 3 | Adult Community Quarantines | January 2023 | Obj. 3 (bridge collapse) | r/dirtykikpals dropped from 143 edges (Dec 2022) to 11 edges (Jan 2023) ✅ |
+| 4 | Reddit API Pricing Protest | June 2023 | Obj. 2 (2-month lag) | Aug 2023 TR=0.285, Oct 2023 TR=0.259 flagged ✅ |
 
-**Key finding:** A consistent **2-month structural propagation lag** was observed between documented platform-wide conflict events and their spectral manifestation — providing an actionable early warning window for platform moderation.
+**Key finding:** A consistent **2-month structural propagation lag** was observed between documented platform-wide conflict events and their spectral manifestation — providing an actionable early warning window for platform moderation that is unavailable to conventional edge-level sentiment monitoring.
 
 ---
 
 ## Limitations
 
-- **Size-dilution effect:** Negative correlation (r = −0.601) between monthly graph size and tension ratio due to fixed-rank RSVD approximation. Future work should explore adaptive k selection.
-- **Regex edge extraction:** Broad alphanumeric pattern required post-hoc corpus filtering. Direct API-based extraction would be more precise.
-- **Propagation lag:** The 2-month lag was empirically observed but not formally modelled. Future work should estimate this parameter and incorporate it into the predictive model.
-- **Non-SFW communities:** 0.73% of clean edges originate from non-SFW communities. Sensitivity analysis confirmed negligible impact on all spectral findings.
+- **Size-dilution effect:** Negative correlation (r = −0.601) between monthly graph size and Tension Ratio, due to fixed-rank RSVD approximation. Future work should explore adaptive k selection proportional to graph size.
+- **Monthly temporal resolution:** Sub-monthly conflict dynamics are masked by the aggregation window. Daily or weekly snapshots during flagged periods may reveal finer-grained tension signatures.
+- **Sample coverage:** The 230-subreddit corpus represents approximately 0.6% of Reddit's 40,000 most popular communities. Findings may not generalise to the full ecosystem.
+- **Predictive model evaluation:** The logistic regression was evaluated on a single 33-month test set. Cross-validation on an independently collected dataset would strengthen confidence in the reported accuracy.
+- **Non-SFW communities:** 19 non-SFW communities contribute 1.7% of clean edges. Sensitivity analysis confirmed negligible impact on all spectral findings (minimum monthly edges remain at 3,171 after exclusion).
 
 ---
 
@@ -215,9 +229,10 @@ False negatives: 0
 If you use this code or dataset in your research, please cite:
 
 ```
-Saha, P., Afrin, T., Sen, S. S., Zayad, A. A., & Das, S. K. (2025).
-Temporal Network-Based Early Warning of Online Community Behaviour
-in Social Platforms. American International University-Bangladesh.
+Sen, S. S., Saha, P., Das, S. K., Afrin, T., Zayad, A. A., & Chowdhury, R. R. (2025).
+Temporal Network-Based Early Warning of Online Community Behaviour in Social Platform.
+American International University-Bangladesh.
+Preprint submitted to Elsevier.
 ```
 
 ---
@@ -227,13 +242,13 @@ in Social Platforms. American International University-Bangladesh.
 Key references for the ST-GSP framework:
 
 - Heider, F. (1946). Attitudes and cognitive organization. *Journal of Psychology*, 21(1), 107–112.
-- Cartwright, D., & Harary, F. (1956). Structural balance. *Psychological Review*, 63(5), 277–293.
-- Shuman, D. I., et al. (2013). The emerging field of signal processing on graphs. *IEEE Signal Processing Magazine*, 30(3), 83–98.
-- Ortega, A., et al. (2018). Graph signal processing. *Proceedings of the IEEE*, 106(5), 808–828.
-- Halko, N., et al. (2011). Finding structure with randomness. *SIAM Review*, 53(2), 217–288.
-- Hutto, C. J., & Gilbert, E. E. (2014). VADER. *ICWSM 2014*, AAAI Press.
-- Watchful1. (2025). Pushshift Reddit Archive. Academic Torrents.
+- Cartwright, D., & Harary, F. (1956). Structural balance: A generalization of Heider's theory. *Psychological Review*, 63(5), 277–293.
+- Shuman, D. I., Narang, S. K., Frossard, P., Ortega, A., & Vandergheynst, P. (2013). The emerging field of signal processing on graphs. *IEEE Signal Processing Magazine*, 30(3), 83–98.
+- Ortega, A., Frossard, P., Kovačević, J., Moura, J. M. F., & Vandergheynst, P. (2018). Graph signal processing: Overview, challenges, and applications. *Proceedings of the IEEE*, 106(5), 808–828.
+- Halko, N., Martinsson, P.-G., & Tropp, J. A. (2011). Finding structure with randomness: Probabilistic algorithms for constructing approximate matrix decompositions. *SIAM Review*, 53(2), 217–288.
+- Hutto, C. J., & Gilbert, E. E. (2014). VADER: A parsimonious rule-based model for sentiment analysis of social media text. *Proceedings of the 8th ICWSM*. AAAI Press.
+- Watchful1. (2025). Subreddit comments/submissions 2005–06 to 2024–12. Academic Torrents.
 
 ---
 
-*Last updated: April 2026*
+*Last updated: May 2026*
